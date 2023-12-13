@@ -54,7 +54,7 @@ func replaceTextWords(v string) string {
 }
 
 func DayOne() {
-	file, err := os.Open("./inputs/day_one_input.txt")
+	file, err := os.Open("./inputs/1_input.txt")
 	var puzzleOutput int
 	if err != nil {
 		log.Fatal(err)

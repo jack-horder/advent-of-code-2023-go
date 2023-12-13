@@ -88,7 +88,7 @@ func createMapofSet(puzzleInputSet string) map[string]int {
 
 func DayTwoPartOne() {
 	var sum int
-	file, err := os.Open("./inputs/day_two_input.txt")
+	file, err := os.Open("./inputs/2_input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -114,7 +114,7 @@ func DayTwoPartOne() {
 
 func DayTwoPartTwo() {
 	var sum int
-	file, err := os.Open("./inputs/day_two_input.txt")
+	file, err := os.Open("./inputs/2_input.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

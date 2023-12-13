@@ -6,5 +6,6 @@ import (
 
 func main() {
 	// aoc.DayOne()
-	aoc.DayTwoPartTwo()
+	// aoc.DayTwoPartTwo()
+	aoc.DayThreePartTwo()
 }
