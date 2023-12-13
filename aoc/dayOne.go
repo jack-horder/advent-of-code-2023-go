@@ -76,5 +76,5 @@ func DayOne() {
 	}
 	// i, _ := getCalibrationValue(replaceTextWords("two1nine"))
 	// fmt.Printf("Puzzle Output: %d", i)
-	fmt.Printf("Puzzle Output: %d", puzzleOutput)
+	fmt.Printf("Puzzle Output: %d\n", puzzleOutput)
 }
