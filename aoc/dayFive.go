@@ -21,6 +21,18 @@ type seed struct {
 	locationNum   int
 }
 
+type seedRange struct {
+	seedStart     int
+	seedRange     int
+	soilNum       int
+	fertilizerNum int
+	waterNum      int
+	lightNum      int
+	tempNum       int
+	humidityNum   int
+	locationNum   int
+}
+
 type mapRanges []*mapRange
 
 type mapRange struct {
@@ -80,12 +92,63 @@ func (s *seed) setMapNums(
 	s.locationNum = locationMap.getMapValue(s.humidityNum)
 }
 
+func (s *seedRange) setMapNums(
+	soilMap mapRanges,
+	fertilizerMap mapRanges,
+	waterMap mapRanges,
+	lightMap mapRanges,
+	tempMap mapRanges,
+	humdidityMap mapRanges,
+	locationMap mapRanges,
+) {
+	var soilNum, fertilizerNum, waterNum, lightNum, tempNum, humidityNum, locationNum int
+	for i := s.seedStart; i < s.seedStart+s.seedRange; i++ {
+		// soil map
+		soilNum = soilMap.getMapValue(i)
+		// fertilizer map
+		fertilizerNum = fertilizerMap.getMapValue(s.soilNum)
+		// water map
+		waterNum = waterMap.getMapValue(s.fertilizerNum)
+		// light map
+		lightNum = lightMap.getMapValue(s.waterNum)
+		// temp map
+		tempNum = tempMap.getMapValue(s.lightNum)
+		// humidity map
+		humidityNum = humdidityMap.getMapValue(s.tempNum)
+		// location map
+		locationNum = locationMap.getMapValue(s.humidityNum)
+		if s.locationNum == 0 || locationNum < s.locationNum {
+			s.soilNum = soilNum
+			s.fertilizerNum = fertilizerNum
+			s.waterNum = waterNum
+			s.lightNum = lightNum
+			s.tempNum = tempNum
+			s.humidityNum = humidityNum
+			s.locationNum = locationNum
+			continue
+		}
+	}
+
+}
+
 func parseSeeds(seedInput string) []*seed {
 	var seeds []*seed
 	seedsStr := strings.Split(strings.Split(seedInput, ": ")[1], " ")
 	for _, seedNum := range seedsStr {
 		seedInt, _ := strconv.Atoi(seedNum)
 		s := &seed{seedNum: seedInt}
+		seeds = append(seeds, s)
+	}
+	return seeds
+}
+
+func parseSeedsPart2(seedInput string) []*seedRange {
+	var seeds []*seedRange
+	seedsStr := strings.Split(strings.Split(seedInput, ": ")[1], " ")
+	for i := 0; i < len(seedsStr); i += 2 {
+		ss, _ := strconv.Atoi(seedsStr[i])
+		sr, _ := strconv.Atoi(seedsStr[i+1])
+		s := &seedRange{seedStart: ss, seedRange: sr}
 		seeds = append(seeds, s)
 	}
 	return seeds
@@ -171,6 +234,41 @@ func parseInput(filename string) (
 	return
 }
 
+func parseInputPart2(filename string) (
+	seeds []*seedRange,
+	soilMap mapRanges,
+	fertilizerMap mapRanges,
+	waterMap mapRanges,
+	lightMap mapRanges,
+	tempMap mapRanges,
+	humdidityMap mapRanges,
+	locationMap mapRanges,
+) {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	// optionally, resize scanner's capacity for lines over 64K, see next example
+
+	scanner.Scan()
+	seeds = parseSeedsPart2(scanner.Text())
+	scanner.Scan()
+	soilMap = createMap(getMapSlice(scanner))
+	fertilizerMap = createMap(getMapSlice(scanner))
+	waterMap = createMap(getMapSlice(scanner))
+	lightMap = createMap(getMapSlice(scanner))
+	tempMap = createMap(getMapSlice(scanner))
+	humdidityMap = createMap(getMapSlice(scanner))
+	locationMap = createMap(getMapSlice(scanner))
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return
+}
+
 func calculateMinLocation(seeds []*seed) int {
 	locationNums := []int{}
 	for _, seed := range seeds {
@@ -179,23 +277,15 @@ func calculateMinLocation(seeds []*seed) int {
 	return slices.Min(locationNums)
 }
 
+func calculateMinLocationPart2(seeds []*seedRange) int {
+	locationNums := []int{}
+	for _, seed := range seeds {
+		locationNums = append(locationNums, seed.locationNum)
+	}
+	return slices.Min(locationNums)
+}
+
 func DayFivePartOne() {
-	// input := [][]int{}
-
-	// row1 := []int{49, 53, 8}
-	// row2 := []int{0, 11, 42}
-	// row3 := []int{42, 0, 7}
-	// row4 := []int{57, 7, 4}
-	// input = append(input, row1)
-	// input = append(input, row2)
-	// input = append(input, row3)
-	// input = append(input, row4)
-	// m := createMap(input)
-	// fmt.Println("Key\tValue")
-	// for key, val := range m {
-	// 	fmt.Printf("%d\t%d\n", key, val)
-	// }
-
 	seeds, soilMap, fertilizerMap, waterMap, lightMap, tempMap, humdidityMap, locationMap := parseInput("./inputs/5_input.txt")
 	for _, seed := range seeds {
 		seed.setMapNums(
