@@ -106,17 +106,17 @@ func (s *seedRange) setMapNums(
 		// soil map
 		soilNum = soilMap.getMapValue(i)
 		// fertilizer map
-		fertilizerNum = fertilizerMap.getMapValue(s.soilNum)
+		fertilizerNum = fertilizerMap.getMapValue(soilNum)
 		// water map
-		waterNum = waterMap.getMapValue(s.fertilizerNum)
+		waterNum = waterMap.getMapValue(fertilizerNum)
 		// light map
-		lightNum = lightMap.getMapValue(s.waterNum)
+		lightNum = lightMap.getMapValue(waterNum)
 		// temp map
-		tempNum = tempMap.getMapValue(s.lightNum)
+		tempNum = tempMap.getMapValue(lightNum)
 		// humidity map
-		humidityNum = humdidityMap.getMapValue(s.tempNum)
+		humidityNum = humdidityMap.getMapValue(tempNum)
 		// location map
-		locationNum = locationMap.getMapValue(s.humidityNum)
+		locationNum = locationMap.getMapValue(humidityNum)
 		if s.locationNum == 0 || locationNum < s.locationNum {
 			s.soilNum = soilNum
 			s.fertilizerNum = fertilizerNum
@@ -300,4 +300,21 @@ func DayFivePartOne() {
 		fmt.Println(seed)
 	}
 	fmt.Printf("Puzzle Output: %d\n", calculateMinLocation(seeds))
+}
+
+func DayFivePartTwo() {
+	seeds, soilMap, fertilizerMap, waterMap, lightMap, tempMap, humdidityMap, locationMap := parseInputPart2("./inputs/5_input.txt")
+	for _, seed := range seeds {
+		seed.setMapNums(
+			soilMap,
+			fertilizerMap,
+			waterMap,
+			lightMap,
+			tempMap,
+			humdidityMap,
+			locationMap,
+		)
+		fmt.Println(seed)
+	}
+	fmt.Printf("Puzzle Output: %d\n", calculateMinLocationPart2(seeds))
 }

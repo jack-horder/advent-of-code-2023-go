@@ -7,5 +7,5 @@ import (
 func main() {
 	// aoc.DayOne()
 	// aoc.DayTwoPartTwo()
-	aoc.DayFivePartOne()
+	aoc.DayFivePartTwo()
 }
