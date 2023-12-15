@@ -1,4 +1,4 @@
-package aoc
+package d3
 
 import (
 	"bufio"

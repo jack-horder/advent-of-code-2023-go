@@ -1,4 +1,4 @@
-package aoc
+package d5
 
 import (
 	"bufio"
