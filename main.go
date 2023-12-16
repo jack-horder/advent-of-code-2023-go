@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	d7.DaySevenPartOne()
+	d7.DaySevenPartTwo()
 }

@@ -95,11 +95,54 @@ func createCardMap() map[string]int {
 	return cardMap
 }
 
+func createCardMapPartTwo() map[string]int {
+	cards := []string{
+		"A",
+		"K",
+		"Q",
+		"T",
+		"9",
+		"8",
+		"7",
+		"6",
+		"5",
+		"4",
+		"3",
+		"2",
+		"J",
+	}
+	cardMap := make(map[string]int)
+	for i, k := 0, len(cards)+1; i < len(cards); i, k = i+1, k-1 {
+		cardMap[cards[i]] = k
+	}
+	return cardMap
+}
+
 func sortCards(cards []card) []card {
 	sort.SliceStable(cards, func(i, j int) bool {
 		return cards[i].numOfOccurences > cards[j].numOfOccurences
 	})
 	return cards
+}
+
+func repurposeJokers(cards []card) []card {
+	var redistCards []card
+	var jokerCard card
+	for _, c := range cards {
+		if c.val == "J" {
+			jokerCard = c
+			continue
+		}
+		redistCards = append(redistCards, c)
+	}
+	if (card{}) == jokerCard {
+		return cards
+	}
+	if len(redistCards) == 0 {
+		return cards
+	}
+	redistCards[0].numOfOccurences += jokerCard.numOfOccurences
+	return redistCards
 }
 
 func parseHand(handStr string, cardMap map[string]int) *hand {
@@ -167,6 +210,38 @@ func DaySevenPartOne() {
 	var hands []*hand
 	for _, hand := range handsStr {
 		h := parseHand(hand, m)
+		h.setHandStrength()
+		hands = append(hands, h)
+	}
+	sort.SliceStable(hands, func(i, j int) bool {
+		if hands[i].handStrength == hands[j].handStrength {
+			for x := range hands[i].handVals {
+				if hands[i].handVals[x] == hands[j].handVals[x] {
+					continue
+				}
+				return hands[i].handVals[x] < hands[j].handVals[x]
+			}
+		}
+		return hands[i].handStrength < hands[j].handStrength
+	})
+	score := 0
+	for i, hand := range hands {
+		fmt.Printf("Cards: %v, Hand Rank: %d, Bid: %d, Total Winnings: %d\n", hand.cardsString(), hand.handStrength, hand.bid, (hand.bid * (i + 1)))
+		score += (hand.bid * (i + 1))
+	}
+	fmt.Printf("Puzzle Output: %d\n", score)
+}
+
+func DaySevenPartTwo() {
+	handsStr, err := readHands("./inputs/7_input.txt")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	m := createCardMapPartTwo()
+	var hands []*hand
+	for _, hand := range handsStr {
+		h := parseHand(hand, m)
+		h.cards = repurposeJokers(h.cards)
 		h.setHandStrength()
 		hands = append(hands, h)
 	}
