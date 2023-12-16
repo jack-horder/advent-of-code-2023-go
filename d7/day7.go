@@ -20,11 +20,15 @@ type card struct {
 type hand struct {
 	cards        []card
 	handMap      map[string]int
+	handVals     []int
+	handValsStr  []string
 	bid          int
-	handVal      int
 	highCardVal  int
 	handStrength int
-	score        int
+}
+
+func (h hand) cardsString() string {
+	return strings.Join(h.handValsStr, ", ")
 }
 
 func (h *hand) setHandStrength() {
@@ -66,10 +70,6 @@ func (h *hand) setHandStrength() {
 	}
 	// high card
 	h.handStrength = 1
-}
-
-func (h *hand) setScore() {
-	h.score = h.handVal * h.handStrength
 }
 
 func createCardMap() map[string]int {
@@ -131,14 +131,14 @@ func parseHand(handStr string, cardMap map[string]int) *hand {
 		val := cardMap[string(r)]
 		handVals = append(handVals, fmt.Sprintf("%v", val))
 	}
-	handVal, _ := strconv.Atoi(strings.Join(handVals, ""))
 	handValInts := []int{}
 	for _, card := range handVals {
 		val, _ := strconv.Atoi(card)
 		handValInts = append(handValInts, val)
 	}
 	h.handMap = cu
-	h.handVal = handVal
+	h.handVals = handValInts
+	h.handValsStr = handVals
 	h.highCardVal = slices.Max(handValInts)
 	return h
 }
@@ -168,23 +168,22 @@ func DaySevenPartOne() {
 	for _, hand := range handsStr {
 		h := parseHand(hand, m)
 		h.setHandStrength()
-		h.setScore()
 		hands = append(hands, h)
 	}
 	sort.SliceStable(hands, func(i, j int) bool {
 		if hands[i].handStrength == hands[j].handStrength {
-			for x := range hands[i].cards {
-				if hands[i].cards[x].numVal == hands[j].cards[x].numVal {
+			for x := range hands[i].handVals {
+				if hands[i].handVals[x] == hands[j].handVals[x] {
 					continue
 				}
-				return hands[i].cards[x].numVal < hands[j].cards[x].numVal
+				return hands[i].handVals[x] < hands[j].handVals[x]
 			}
 		}
 		return hands[i].handStrength < hands[j].handStrength
 	})
 	score := 0
 	for i, hand := range hands {
-		fmt.Printf("Hand Value: %d, Hand Rank: %d, Bid: %d, Total Winnings: %d\n", hand.handVal, hand.handStrength, hand.bid, (hand.bid * (i + 1)))
+		fmt.Printf("Cards: %v, Hand Rank: %d, Bid: %d, Total Winnings: %d\n", hand.cardsString(), hand.handStrength, hand.bid, (hand.bid * (i + 1)))
 		score += (hand.bid * (i + 1))
 	}
 	fmt.Printf("Puzzle Output: %d\n", score)
