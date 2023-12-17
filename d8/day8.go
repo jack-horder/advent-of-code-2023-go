@@ -158,15 +158,5 @@ func DayEightPartTwo() {
 	for i := 0; i < len(currentIterations); i++ {
 		currentIterations[i] = currentIterations[i] * len(instructions)
 	}
-	// for !checkEndState(currentNodes) {
-	// 	for _, i := range instructions {
-	// 		currentNodes = traverseNodes(currentNodes, i)
-	// 		steps++
-	// 		fmt.Println(currentNodes)
-	// 		if checkEndState(currentNodes) {
-	// 			break
-	// 		}
-	// 	}
-	// }
 	fmt.Printf("Puzzle Output: %d\n", LCM(currentIterations[0], currentIterations[1], currentIterations[2:]...))
 }
