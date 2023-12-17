@@ -16,6 +16,10 @@ type node struct {
 	right    *node
 }
 
+func (n node) String() string {
+	return fmt.Sprintf("<label: %v, left: %v, right: %v>", n.label, n.left.label, n.right.label)
+}
+
 type nodeMap map[string]*node
 
 func parseNodes(lines []string) []*node {
@@ -76,6 +80,40 @@ func readLines(filename string) ([]string, error) {
 	return lines, scanner.Err()
 }
 
+func getStartNodes(nodes []*node) []*node {
+	var startNodes []*node
+	for _, n := range nodes {
+		if strings.HasSuffix(n.label, "A") {
+			startNodes = append(startNodes, n)
+		}
+	}
+	return startNodes
+}
+
+func checkEndState(n *node) bool {
+	return strings.HasSuffix(n.label, "Z")
+}
+
+func GCD(a, b int) int {
+	for b != 0 {
+		t := b
+		b = a % b
+		a = t
+	}
+	return a
+}
+
+// find Least Common Multiple (LCM) via GCD
+func LCM(a, b int, integers ...int) int {
+	result := a * b / GCD(a, b)
+
+	for i := 0; i < len(integers); i++ {
+		result = LCM(result, integers[i])
+	}
+
+	return result
+}
+
 func DayEightPartOne() {
 	lines, err := readLines("./inputs/8_input.txt")
 	if err != nil {
@@ -95,4 +133,40 @@ func DayEightPartOne() {
 		}
 	}
 	fmt.Printf("Puzzle Output: %d\n", steps)
+}
+
+func DayEightPartTwo() {
+	lines, err := readLines("./inputs/8_input.txt")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	instructions := []rune(lines[0])
+	nodes := parseNodes(lines[2:])
+	nm := createNodeMap(nodes)
+	parseNodeStrings(nodes, nm)
+	startNodes := getStartNodes(nodes)
+	currentIterations := make([]int, len(startNodes))
+	for idx, n := range startNodes {
+		endNode := n
+		for !checkEndState(endNode) {
+			for _, i := range instructions {
+				endNode = traverseNode(endNode, i)
+			}
+			currentIterations[idx] += 1
+		}
+	}
+	for i := 0; i < len(currentIterations); i++ {
+		currentIterations[i] = currentIterations[i] * len(instructions)
+	}
+	// for !checkEndState(currentNodes) {
+	// 	for _, i := range instructions {
+	// 		currentNodes = traverseNodes(currentNodes, i)
+	// 		steps++
+	// 		fmt.Println(currentNodes)
+	// 		if checkEndState(currentNodes) {
+	// 			break
+	// 		}
+	// 	}
+	// }
+	fmt.Printf("Puzzle Output: %d\n", LCM(currentIterations[0], currentIterations[1], currentIterations[2:]...))
 }
