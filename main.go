@@ -1,9 +1,9 @@
 package main
 
 import (
-	"advent-of-code-2023-go/d8"
+	"advent-of-code-2023-go/d9"
 )
 
 func main() {
-	d8.DayEightPartTwo()
+	d9.DayNinePartTwo()
 }
